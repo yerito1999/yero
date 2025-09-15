@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>My Jero💖 - Tiroteo de Amor</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: Georgia, serif;
+            background: linear-gradient(135deg, #1a0033, #2d0066, #4d0099);
+            overflow: hidden;
+            height: 100vh;
+            color: white;
+            cursor: crosshair;
+            touch-action: none;
+            user-select: none;
+        }
+
+        /* Estrellas de fondo */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        #gameContainer {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            touch-action: none;
+        }
+
+        /* Vaca adorable mejorada */
+        .cow-container {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            width: 120px;
+            height: 120px;
+            z-index: 10;
+            pointer-events: none;
+            transition: top 0.3s ease-out;
+            transform: translateY(-50%);
+            animation: cowFloat 3s ease-in-out infinite;
+        }
+
+        .cow-body {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            top: 15px;
+            left: 15px;
+            box-shadow: 0 0 25px rgba(255, 51, 153, 0.4);
+            border: 3px solid #333;
+            overflow: hidden;
+        }
+
+        /* Orejas de la vaca */
+        .cow-ears {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .cow-ear {
+            position: absolute;
+            width: 25px;
+            height: 35px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+
+        .ear-left {
+            top: 0px;
+            left: 0px;
+            transform: rotate(-35deg);
+        }
+
+        .ear-right {
+            top: 0px;
+            right: 0px;
+            transform: rotate(35deg);
+        }
+
+        .ear-inner {
+            position: absolute;
+            width: 15px;
+            height: 20px;
+            background: #ffb3ba;
+            border-radius: 50%;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Manchas de la vaca */
+        .cow-spots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .cow-spot {
+            position: absolute;
+            background: #333;
+            border-radius: 50%;
+        }
+
+        .spot1 { width: 18px; height: 18px; top: 12px; left: 25px; }
+        .spot2 { width: 15px; height: 15px; top: 40px; right: 18px; }
+        .spot3 { width: 12px; height: 12px; bottom: 25px; left: 30px; }
+        .spot4 { width: 10px; height: 10px; top: 25px; right: 35px; }
+
+        /* Ojos de la vaca */
+        .cow-eyes {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 20px;
+        }
+
+        .cow-eye {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        .eye-left { left: 5px; }
+        .eye-right { right: 5px; }
+
+        .eye-pupil {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #333;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            animation: blink 4s infinite;
+        }
+
+        .eye-shine {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+        }
+
+        /* Hocico de la vaca */
+        .cow-snout {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 22px;
+            background: #ffb3ba;
+            border-radius: 50%;
+            border: 3px solid #333;
+        }
+
+        .cow-nostrils {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 10px;
+        }
+
+        .nostril {
+            position: absolute;
+            width: 4px;
+            height: 3px;
+            background: #333;
+            border-radius: 50%;
+            top: 3px;
+        }
+
+        .nostril-left { left: 3px; }
+        .nostril-right { right: 3px; }
+
+        /* Mejillas sonrosadas */
+        .cow-cheeks {
+            position: absolute;
+            top: 42px;
+            width: 100%;
+            height: 25px;
+        }
+
+        .cheek {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 182, 193, 0.8);
+            border-radius: 50%;
+            animation: blush 2s ease-in-out infinite;
+        }
+
+        .cheek-left { left: 12px; }
+        .cheek-right { right: 12px; }
+
+        /* Cuernitos */
+        .cow-horns {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 15px;
+        }
+
+        .horn {
+            position: absolute;
+            width: 8px;
+            height: 12px;
+            background: #d2691e;
+            border-radius: 50% 50% 20% 20%;
+            border: 1px solid #8b4513;
+        }
+
+        .horn-left { left: 8px; transform: rotate(-15deg); }
+        .horn-right { right: 8px; transform: rotate(15deg); }
+
+        /* Animaciones mejoradas */
+        @keyframes cowFloat {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-65%) scale(1.03); }
+        }
+
+        @keyframes cowShoot {
+            0% { transform: translateY(-50%) scale(1) rotate(0deg); }
+            25% { transform: translateY(-50%) scale(1.1) rotate(-3deg); }
+            50% { transform: translateY(-50%) scale(0.95) rotate(3deg); }
+            100% { transform: translateY(-50%) scale(1) rotate(0deg); }
+        }
+
+        @keyframes cowCelebrate {
+            0%, 100% { transform: translateY(-50%) scale(1) rotate(0deg); }
+            25% { transform: translateY(-50%) scale(1.15) rotate(-8deg); }
+            50% { transform: translateY(-50%) scale(1.05) rotate(0deg); }
+            75% { transform: translateY(-50%) scale(1.15) rotate(8deg); }
+        }
+
+        @keyframes blink {
+            0%, 92%, 100% { transform: scaleY(1); }
+            94%, 96% { transform: scaleY(0.1); }
+        }
+
+        @keyframes blush {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .cow-shooting {
+            animation: cowShoot 0.4s ease-out !important;
+        }
+
+        .cow-celebrating {
+            animation: cowCelebrate 0.8s ease-in-out infinite !important;
+        }
+
+        /* Menú mejorado */
+        .menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(26,0,51,0.9));
+            padding: 50px 40px;
+            border-radius: 25px;
+            border: 3px solid #ff3399;
+            box-shadow: 0 0 50px rgba(255, 51, 153, 0.6);
+            backdrop-filter: blur(10px);
+            max-width: 90%;
+        }
+
+        .menu h1 {
+            font-size: 3.5rem;
+            color: #ff3399;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px #ff3399;
+            animation: titlePulse 2s ease-in-out infinite;
+            font-style: italic;
+        }
+
+        .menu-subtitle {
+            font-size: 1.5rem;
+            color: #ff66b3;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .menu button {
+            background: linear-gradient(135deg, #ff3399, #ff66b3, #ff99cc);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 12px;
+            transition: all 0.4s;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 51, 153, 0.4);
+        }
+
+        .menu button:hover, .menu button:active {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 51, 153, 0.6);
+        }
+
+        .difficulty-btn {
+            display: block;
+            width: 280px;
+            margin: 15px auto;
+            font-size: 16px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .difficulty-btn.selected {
+            background: linear-gradient(135deg, #ff1744, #ff3399, #ff66b3);
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 51, 153, 0.7);
+        }
+
+        /* UI mejorada */
+        .ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(26,0,51,0.8));
+            padding: 15px 25px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 51, 153, 0.5);
+            backdrop-filter: blur(10px);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .love-bar {
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(26,0,51,0.8));
+            height: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px auto;
+            width: 350px;
+            border: 2px solid rgba(255, 51, 153, 0.5);
+            box-shadow: 0 0 20px rgba(255, 51, 153, 0.3);
+        }
+
+        .love-fill {
+            background: linear-gradient(90deg, #ff3399, #ff66b3, #ff99cc);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease-out;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 51, 153, 0.6);
+            position: relative;
+        }
+
+        .love-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .combo-display {
+            text-align: center;
+            margin: 15px auto;
+            background: rgba(255,215,0,0.2);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 0 0 10px #ffd700;
+            animation: pulseGlow 0.6s ease-in-out infinite alternate;
+            width: fit-content;
+        }
+
+        @keyframes pulseGlow {
+            from { 
+                transform: scale(1);
+                text-shadow: 0 0 10px #ffd700;
+            }
+            to { 
+                transform: scale(1.05);
+                text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700;
+            }
+        }
+
+        /* Mensaje final mejorado */
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(26,0,51,0.95));
+            padding: 50px 40px;
+            border-radius: 25px;
+            text-align: center;
+            z-index: 100;
+            border: 3px solid #ff3399;
+            box-shadow: 0 0 60px rgba(255, 51, 153, 0.8);
+            backdrop-filter: blur(15px);
+            display: none;
+            max-width: 90%;
+            animation: messageAppear 0.8s ease-out;
+        }
+
+        @keyframes messageAppear {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .message.show { display: block; }
+
+        .message h2 {
+            color: #ff3399;
+            font-size: 3rem;
+            margin-bottom: 25px;
+            text-shadow: 0 0 30px #ff3399;
+            animation: titlePulse 2s ease-in-out infinite;
+            font-style: italic;
+        }
+
+        .message .quote {
+            font-size: 1.4rem;
+            color: #ffd700;
+            font-style: italic;
+            margin: 25px 0;
+            text-shadow: 0 0 20px #ffd700;
+            animation: quotePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes quotePulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Instrucciones mejoradas */
+        .instructions {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,0,51,0.8));
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 51, 153, 0.5);
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+            text-shadow: 0 0 10px rgba(255, 51, 153, 0.8);
+        }
+
+        .hidden { display: none !important; }
+
+        /* Texto flotante mejorado */
+        .floating-text {
+            position: absolute;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 22px;
+            pointer-events: none;
+            z-index: 30;
+            text-shadow: 0 0 15px #ffd700;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-30px) scale(1.2);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-60px) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* Power-ups display */
+        .powerups-display {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            z-index: 25;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,0,51,0.8));
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 51, 153, 0.5);
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+        }
+
+        .powerup-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .powerup-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .powerup-timer {
+            margin-left: auto;
+            color: #ff99cc;
+        }
+
+        /* Leaderboard styles */
+        .leaderboard {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(26,0,51,0.95));
+            padding: 40px;
+            border-radius: 25px;
+            border: 3px solid #ff3399;
+            box-shadow: 0 0 60px rgba(255, 51, 153, 0.8);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            max-width: 90%;
+            min-width: 400px;
+            text-align: center;
+        }
+
+        .leaderboard h2 {
+            color: #ff3399;
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            text-shadow: 0 0 30px #ff3399;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 8px 0;
+            background: rgba(255, 51, 153, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 51, 153, 0.3);
+        }
+
+        .leaderboard-rank {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 18px;
+            width: 40px;
+        }
+
+        .leaderboard-name {
+            color: #ff99cc;
+            font-size: 16px;
+            flex-grow: 1;
+            text-align: left;
+            margin-left: 15px;
+        }
+
+        .leaderboard-score {
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .name-input {
+            background: rgba(255, 51, 153, 0.2);
+            border: 2px solid #ff3399;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Screen shake effect */
+        .screen-shake {
+            animation: screenShake 0.5s ease-in-out;
+        }
+
+        @keyframes screenShake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-3px) rotate(-1deg); }
+            20% { transform: translateX(3px) rotate(1deg); }
+            30% { transform: translateX(-2px) rotate(-1deg); }
+            40% { transform: translateX(2px) rotate(1deg); }
+            50% { transform: translateX(-1px) rotate(-0.5deg); }
+            60% { transform: translateX(1px) rotate(0.5deg); }
+            70% { transform: translateX(-1px) rotate(-0.5deg); }
+            80% { transform: translateX(1px) rotate(0.5deg); }
+            90% { transform: translateX(-0.5px); }
+        }
+
+        /* Enhanced particles */
+        .super-particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 15;
+            font-size: 20px;
+            animation: superParticle 1.5s ease-out forwards;
+        }
+
+        @keyframes superParticle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2) rotate(180deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0.3) rotate(360deg) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        /* Control de sonido */
+        .sound-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+        }
+
+        .sound-btn {
+            background: rgba(255, 51, 153, 0.3);
+            border: 2px solid #ff3399;
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .sound-btn:hover, .sound-btn:active {
+            background: rgba(255, 51, 153, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* Responsive mejorado */
+        @media (max-width: 768px) {
+            .menu h1 { font-size: 2.5rem; }
+            .menu-subtitle { font-size: 1.2rem; }
+            .difficulty-btn { width: 240px; font-size: 14px; padding: 15px 25px; }
+            .stats { font-size: 14px; padding: 12px 20px; flex-wrap: wrap; gap: 10px; }
+            .love-bar { width: 280px; }
+            .message h2 { font-size: 2.2rem; }
+            .message .quote { font-size: 1.1rem; }
+            .instructions { font-size: 14px; padding: 12px 25px; }
+            .cow-container { width: 100px; height: 100px; }
+            .cow-body { width: 75px; height: 75px; }
+        }
+
+        @media (max-width: 480px) {
+            .menu { padding: 40px 25px; }
+            .difficulty-btn { width: 200px; font-size: 13px; }
+            .love-bar { width: 250px; }
+            .stats { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <audio id="backgroundMusic" loop>
+        <source src="https://s17.aconvert.com/convert/p3r68-cdx67/y1tvf-tpshf.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <div id="gameContainer">
+        <canvas id="canvas"></canvas>
+        
+        <div class="cow-container" id="cow">
+            <div class="cow-horns">
+                <div class="horn horn-left"></div>
+                <div class="horn horn-right"></div>
+            </div>
+            
+            <div class="cow-ears">
+                <div class="cow-ear ear-left">
+                    <div class="ear-inner"></div>
+                </div>
+                <div class="cow-ear ear-right">
+                    <div class="ear-inner"></div>
+                </div>
+            </div>
+            
+            <div class="cow-body">
+                <div class="cow-spots">
+                    <div class="cow-spot spot1"></div>
+                    <div class="cow-spot spot2"></div>
+                    <div class="cow-spot spot3"></div>
+                    <div class="cow-spot spot4"></div>
+                </div>
+                
+                <div class="cow-eyes">
+                    <div class="cow-eye eye-left">
+                        <div class="eye-pupil">
+                            <div class="eye-shine"></div>
+                        </div>
+                    </div>
+                    <div class="cow-eye eye-right">
+                        <div class="eye-pupil">
+                            <div class="eye-shine"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cow-cheeks">
+                    <div class="cheek cheek-left"></div>
+                    <div class="cheek cheek-right"></div>
+                </div>
+                
+                <div class="cow-snout">
+                    <div class="cow-nostrils">
+                        <div class="nostril nostril-left"></div>
+                        <div class="nostril nostril-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sound-control">
+            <button class="sound-btn" id="soundBtn">🔊</button>
+        </div>
+        
+        <div class="ui hidden" id="ui">
+            <div class="stats">
+                <div>💖 Amor: <span id="love">0</span>/100</div>
+                <div>🎯 Puntos: <span id="score">0</span></div>
+                <div>⏰ <span id="time">2:00</span></div>
+            </div>
+            <div class="love-bar">
+                <div class="love-fill" id="loveFill"></div>
+            </div>
+            <div class="combo-display hidden" id="combo">
+                🔥 ¡Combo x<span id="comboCount">1</span>!
+            </div>
+        </div>
+
+        <div class="powerups-display hidden" id="powerupsDisplay">
+            <div class="powerup-item" id="tripleHeartPowerup" style="display: none;">
+                <span class="powerup-icon">💕</span>
+                <span>Triple Corazón</span>
+                <span class="powerup-timer" id="tripleHeartTimer">10s</span>
+            </div>
+            <div class="powerup-item" id="slowTimePowerup" style="display: none;">
+                <span class="powerup-icon">⏰</span>
+                <span>Tiempo Lento</span>
+                <span class="powerup-timer" id="slowTimeTimer">5s</span>
+            </div>
+        </div>
+
+        <div class="instructions hidden" id="instructions">
+            💕 Toca/Clic para disparar corazones • Mueve para apuntar a las pizzas mexicanas 🌮
+        </div>
+
+        <div class="menu" id="mainMenu">
+            <h1>My Jero💖</h1>
+            <p class="menu-subtitle">Tiroteo de Amor Mexicano</p>
+            
+            <div style="background: rgba(255,51,153,0.2); padding: 20px; border-radius: 15px; margin: 25px 0; border: 1px solid #ff3399;">
+                <p style="color: #ffd700; font-size: 16px; margin-bottom: 8px;">🎵 Juego especial para mi amor</p>
+                <p style="color: #ff99cc; font-size: 14px;">Con toda mi dedicación y cariño</p>
+            </div>
+            
+            <h3 style="color: #ff99cc; margin: 25px 0 15px;">Selecciona tu Nivel de Picante:</h3>
+            <button class="difficulty-btn selected" data-difficulty="easy">🌮 Suave - Para principiantes del amor</button>
+            <button class="difficulty-btn" data-difficulty="normal">🌶️ Medio - Amor con sazón</button>
+            <button class="difficulty-btn" data-difficulty="hard">🔥 Picante - Solo para expertos</button>
+            
+            <button id="startBtn" style="margin-top: 30px; font-size: 20px; padding: 20px 40px;">¡Comenzar Aventura de Amor!</button>
+        </div>
+
+        <div class="message" id="endMessage">
+            <h2 id="endTitle">¡Felicidades, Mi Amor!</h2>
+            <div class="quote" id="loveQuote"></div>
+            <p id="endText"></p>
+            <br>
+            <input type="text" class="name-input" id="nameInput" placeholder="Escribe tu nombre" maxlength="20" style="display: none;">
+            <button id="saveScoreBtn" style="display: none;">💾 Guardar Puntuación</button>
+            <button id="leaderboardBtn">🏆 Ver Puntuaciones</button>
+            <button id="playAgainBtn">💖 Jugar de Nuevo</button>
+            <button id="menuBtn">🏠 Menú Principal</button>
+        </div>
+
+        <div class="leaderboard hidden" id="leaderboard">
+            <h2>🏆 Mejores Puntuaciones</h2>
+            <ol class="leaderboard-list" id="leaderboardList">
+                <!-- Las puntuaciones se cargarán aquí -->
+            </ol>
+            <button id="closeLeaderboardBtn">❌ Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        class MexicanLoveGame {
+            constructor() {
+                // Elementos DOM
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.cow = document.getElementById('cow');
+                this.ui = document.getElementById('ui');
+                this.mainMenu = document.getElementById('mainMenu');
+                this.endMessage = document.getElementById('endMessage');
+                this.instructions = document.getElementById('instructions');
+                this.soundBtn = document.getElementById('soundBtn');
+                this.backgroundMusic = document.getElementById('backgroundMusic');
+                
+                // Estado del juego
+                this.state = 'menu';
+                this.difficulty = 'easy';
+                this.soundEnabled = true;
+                this.hearts = [];
+                this.pizzas = [];
+                this.particles = [];
+                this.powerups = [];
+                this.love = 0;
+                this.score = 0;
+                this.timeLeft = 120;
+                this.combo = 1;
+                this.hits = 0;
+                this.lastSpawn = 0;
+                this.lastPowerupSpawn = 0;
+                this.animationId = null;
+                this.gameTimer = null;
+                
+                // Power-ups activos
+                this.activePowerups = {
+                    tripleHeart: { active: false, timeLeft: 0 },
+                    slowTime: { active: false, timeLeft: 0 }
+                };
+                
+                // Efectos visuales
+                this.screenShakeIntensity = 0;
+                
+                // Configuraciones por dificultad
+                this.settings = {
+                    easy: { speed: 2.5, rate: 2200, time: 150, pizzaTypes: ['🍕'] },
+                    normal: { speed: 3.5, rate: 1700, time: 120, pizzaTypes: ['🍕', '🌮'] },
+                    hard: { speed: 4.5, rate: 1200, time: 90, pizzaTypes: ['🍕', '🌮', '🌯'] }
+                };
+                
+                // Mensajes románticos mexicanos
+                this.messages = [
+                    "Jero, eres más sabroso que un taco al pastor 🌮💕",
+                    "Tu amor tiene más sabor que el mole poblano 🫶",
+                    "Eres mi chilito favorito, picosito pero dulce 🌶️❤️",
+                    "Contigo la vida sabe a churros con cajeta 🍯",
+                    "Mi corazón late al ritmo de mariachi por ti 🎵💖",
+                    "Eres mi tesoro más preciado que el oro azteca ✨👑"
+                ];
+                
+                this.init();
+                this.loadLeaderboard();
+            }
+            
+            init() {
+                this.createStars();
+                this.resizeCanvas();
+                this.bindEvents();
+                console.log('Juego de amor mexicano inicializado');
+            }
+            
+            createStars() {
+                const container = document.getElementById('stars');
+                for (let i = 0; i < 80; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.width = star.style.height = (Math.random() * 4 + 1) + 'px';
+                    star.style.animationDelay = Math.random() * 3 + 's';
+                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    container.appendChild(star);
+                }
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            bindEvents() {
+                // Redimensionar
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // Menú
+                document.getElementById('startBtn').addEventListener('click', () => this.startGame());
+                document.getElementById('playAgainBtn').addEventListener('click', () => this.startGame());
+                document.getElementById('menuBtn').addEventListener('click', () => this.showMenu());
+                document.getElementById('leaderboardBtn').addEventListener('click', () => this.showLeaderboard());
+                document.getElementById('saveScoreBtn').addEventListener('click', () => this.saveScore());
+                document.getElementById('closeLeaderboardBtn').addEventListener('click', () => this.hideLeaderboard());
+                this.soundBtn.addEventListener('click', () => this.toggleSound());
+                
+                // Dificultad
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        this.difficulty = btn.dataset.difficulty;
+                    });
+                });
+                
+                // Controles de juego - PC
+                this.canvas.addEventListener('click', (e) => this.shoot(e));
+                this.canvas.addEventListener('mousemove', (e) => this.moveCow(e));
+                
+                // Controles móviles
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    this.moveCow(touch);
+                    this.shoot(touch);
+                });
+                
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    this.moveCow(touch);
+                });
+                
+                // Teclado
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' && this.state === 'playing') {
+                        e.preventDefault();
+                        this.pauseGame();
+                    }
+                });
+            }
+
+            playBackgroundMusic() {
+                if (this.soundEnabled && this.backgroundMusic.paused) {
+                    this.backgroundMusic.currentTime = 0;
+                    this.backgroundMusic.play().catch(e => console.error("Error al reproducir música:", e));
+                }
+            }
+
+            stopBackgroundMusic() {
+                this.backgroundMusic.pause();
+                this.backgroundMusic.currentTime = 0;
+            }
+            
+            startGame() {
+                console.log('Iniciando juego con dificultad:', this.difficulty);
+                
+                this.state = 'playing';
+                const config = this.settings[this.difficulty];
+                
+                // Resetear estado
+                this.love = 0;
+                this.score = 0;
+                this.timeLeft = config.time;
+                this.combo = 1;
+                this.hits = 0;
+                this.lastSpawn = 0;
+                this.lastPowerupSpawn = 0;
+                this.hearts = [];
+                this.pizzas = [];
+                this.particles = [];
+                this.powerups = [];
+                
+                // Resetear power-ups
+                this.activePowerups = {
+                    tripleHeart: { active: false, timeLeft: 0 },
+                    slowTime: { active: false, timeLeft: 0 }
+                };
+                
+                // Mostrar UI de juego
+                this.mainMenu.classList.add('hidden');
+                this.ui.classList.remove('hidden');
+                this.instructions.classList.remove('hidden');
+                this.endMessage.classList.remove('show');
+                document.getElementById('powerupsDisplay').classList.remove('hidden');
+                this.updatePowerupsDisplay();
+
+                // Iniciar música
+                this.playBackgroundMusic();
+                
+                // Iniciar timer del juego
+                this.startTimer();
+                
+                // Iniciar loop del juego
+                this.gameLoop();
+                
+                this.updateUI();
+                console.log('Juego iniciado correctamente');
+            }
+            
+            startTimer() {
+                if (this.gameTimer) clearInterval(this.gameTimer);
+                
+                this.gameTimer = setInterval(() => {
+                    if (this.state === 'playing') {
+                        this.timeLeft--;
+                        this.updateTimer();
+                        
+                        if (this.timeLeft <= 0) {
+                            this.endGame();
+                        }
+                    }
+                }, 1000);
+            }
+            
+            updateTimer() {
+                const minutes = Math.floor(this.timeLeft / 60);
+                const seconds = this.timeLeft % 60;
+                document.getElementById('time').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            moveCow(event) {
+                if (this.state !== 'playing') return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const y = (event.clientY || event.pageY) - rect.top;
+                const clampedY = Math.max(80, Math.min(window.innerHeight - 80, y));
+                
+                this.cow.style.top = clampedY + 'px';
+            }
+            
+            shoot(event) {
+                if (this.state !== 'playing') return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const targetX = (event.clientX || event.pageX) - rect.left;
+                const targetY = (event.clientY || event.pageY) - rect.top;
+                
+                // Posición de la vaca
+                const cowRect = this.cow.getBoundingClientRect();
+                const startX = cowRect.left + cowRect.width - rect.left;
+                const startY = cowRect.top + cowRect.height / 2 - rect.top;
+                
+                // Calcular dirección
+                const dx = targetX - startX;
+                const dy = targetY - startY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 50) return; // No disparar muy cerca
+                
+                const speed = 12;
+                
+                // Triple corazón power-up
+                if (this.activePowerups.tripleHeart.active) {
+                    for (let i = 0; i < 3; i++) {
+                        const angle = (i - 1) * 0.2; // Spread de disparos
+                        const heart = {
+                            x: startX,
+                            y: startY,
+                            vx: ((dx / distance) * speed) + Math.sin(angle) * 2,
+                            vy: ((dy / distance) * speed) + Math.cos(angle) * 2,
+                            life: 120,
+                            size: 22,
+                            type: 'triple'
+                        };
+                        this.hearts.push(heart);
+                    }
+                } else {
+                    const heart = {
+                        x: startX,
+                        y: startY,
+                        vx: (dx / distance) * speed,
+                        vy: (dy / distance) * speed,
+                        life: 120,
+                        size: 20,
+                        type: 'normal'
+                    };
+                    this.hearts.push(heart);
+                }
+                
+                // Animación de disparo
+                this.cow.classList.add('cow-shooting');
+                setTimeout(() => {
+                    this.cow.classList.remove('cow-shooting');
+                }, 400);
+                
+                // Efecto de sonido (vibración en móviles)
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+                
+                console.log('Corazón disparado:', this.hearts[this.hearts.length - 1]);
+            }
+            
+            spawnPizza() {
+                const now = Date.now();
+                const config = this.settings[this.difficulty];
+                
+                if (now - this.lastSpawn < config.rate) return;
+                
+                const types = config.pizzaTypes;
+                const emoji = types[Math.floor(Math.random() * types.length)];
+                
+                const pizza = {
+                    x: this.canvas.width + 50,
+                    y: Math.random() * (this.canvas.height - 200) + 100,
+                    vx: -config.speed,
+                    emoji: emoji,
+                    size: 40,
+                    life: 300,
+                    points: emoji === '🌯' ? 150 : emoji === '🌮' ? 120 : 100,
+                    loveValue: emoji === '🌯' ? 20 : emoji === '🌮' ? 15 : 10
+                };
+                
+                this.pizzas.push(pizza);
+                this.lastSpawn = now;
+            }
+            
+            updateHearts() {
+                for (let i = this.hearts.length - 1; i >= 0; i--) {
+                    const heart = this.hearts[i];
+                    heart.x += heart.vx;
+                    heart.y += heart.vy;
+                    heart.life--;
+                    
+                    // Remover si sale de pantalla o se acaba la vida
+                    if (heart.x > this.canvas.width + 100 || heart.life <= 0) {
+                        this.hearts.splice(i, 1);
+                    }
+                }
+            }
+            
+            updatePizzas() {
+                for (let i = this.pizzas.length - 1; i >= 0; i--) {
+                    const pizza = this.pizzas[i];
+                    pizza.x += pizza.vx;
+                    pizza.life--;
+                    
+                    // Si sale de pantalla por la izquierda o se acaba la vida
+                    if (pizza.x < -100 || pizza.life <= 0) {
+                        this.pizzas.splice(i, 1);
+                        // Reducir combo si escapa
+                        if (pizza.x < -100) {
+                            this.combo = Math.max(1, this.combo - 1);
+                            this.updateCombo();
+                        }
+                    }
+                }
+            }
+            
+            checkCollisions() {
+                for (let i = this.hearts.length - 1; i >= 0; i--) {
+                    const heart = this.hearts[i];
+                    
+                    for (let j = this.pizzas.length - 1; j >= 0; j--) {
+                        const pizza = this.pizzas[j];
+                        
+                        const dx = heart.x - pizza.x;
+                        const dy = heart.y - pizza.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < (heart.size + pizza.size) / 2) {
+                            // Colisión detectada
+                            const points = pizza.points * this.combo;
+                            this.score += points;
+                            this.love += pizza.loveValue;
+                            this.hits++;
+                            
+                            // Actualizar combo
+                            this.combo = Math.min(5, this.combo + 1);
+                            this.updateCombo();
+                            
+                            // Crear efectos mejorados
+                            this.createExplosion(pizza.x, pizza.y);
+                            this.createSuperParticles(pizza.x, pizza.y);
+                            this.showFloatingText(pizza.x, pizza.y, '+' + points);
+                            this.screenShake();
+                            
+                            // Remover corazón y pizza
+                            this.hearts.splice(i, 1);
+                            this.pizzas.splice(j, 1);
+                            
+                            console.log('¡Impacto! Puntos:', points, 'Combo:', this.combo);
+                            break;
+                        }
+                    }
+                }
+                
+                // Colisiones con power-ups
+                for (let i = this.hearts.length - 1; i >= 0; i--) {
+                    const heart = this.hearts[i];
+                    
+                    for (let j = this.powerups.length - 1; j >= 0; j--) {
+                        const powerup = this.powerups[j];
+                        
+                        const dx = heart.x - powerup.x;
+                        const dy = heart.y - powerup.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < (heart.size + powerup.size) / 2) {
+                            // Activar power-up
+                            this.activatePowerup(powerup.type, powerup.duration);
+                            this.createSuperParticles(powerup.x, powerup.y);
+                            this.showFloatingText(powerup.x, powerup.y, '¡Power-up!');
+                            
+                            // Remover corazón y power-up
+                            this.hearts.splice(i, 1);
+                            this.powerups.splice(j, 1);
+                            console.log('Power-up activado:', powerup.type);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            createExplosion(x, y) {
+                const colors = ['#ff3399', '#ff66b3', '#ff99cc', '#ffd700', '#ff1744'];
+                
+                for (let i = 0; i < 12; i++) {
+                    const angle = (Math.PI * 2 * i) / 12;
+                    const speed = 4 + Math.random() * 3;
+                    
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 40,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        size: 3 + Math.random() * 4
+                    });
+                }
+            }
+            
+            updateParticles() {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const particle = this.particles[i];
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.life--;
+                    particle.vy += 0.2; // gravedad
+                    
+                    if (particle.life <= 0) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+            }
+            
+            showFloatingText(x, y, text) {
+                const element = document.createElement('div');
+                element.className = 'floating-text';
+                element.textContent = text;
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+                
+                document.getElementById('gameContainer').appendChild(element);
+                
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                }, 2000);
+            }
+            
+            createSuperParticles(x, y) {
+                const emojis = ['💖', '💕', '⭐', '✨', '🌟'];
+                
+                for (let i = 0; i < 5; i++) {
+                    const element = document.createElement('div');
+                    element.className = 'super-particle';
+                    element.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    element.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+                    element.style.top = (y + (Math.random() - 0.5) * 100) + 'px';
+                    
+                    document.getElementById('gameContainer').appendChild(element);
+                    
+                    setTimeout(() => {
+                        if (element.parentNode) {
+                            element.parentNode.removeChild(element);
+                        }
+                    }, 1500);
+                }
+            }
+            
+            screenShake() {
+                this.screenShakeIntensity = 10;
+                document.getElementById('gameContainer').classList.add('screen-shake');
+                
+                setTimeout(() => {
+                    document.getElementById('gameContainer').classList.remove('screen-shake');
+                }, 500);
+            }
+            
+            activatePowerup(type, duration) {
+                this.activePowerups[type].active = true;
+                this.activePowerups[type].timeLeft = duration;
+                console.log('Power-up activado:', type, 'Duración:', duration);
+            }
+            
+            updatePowerupsDisplay() {
+                // Triple corazón
+                const tripleElement = document.getElementById('tripleHeartPowerup');
+                const tripleTimer = document.getElementById('tripleHeartTimer');
+                if (this.activePowerups.tripleHeart.active) {
+                    tripleElement.style.display = 'flex';
+                    tripleTimer.textContent = Math.ceil(this.activePowerups.tripleHeart.timeLeft / 1000) + 's';
+                } else {
+                    tripleElement.style.display = 'none';
+                }
+                
+                // Tiempo lento
+                const slowElement = document.getElementById('slowTimePowerup');
+                const slowTimer = document.getElementById('slowTimeTimer');
+                if (this.activePowerups.slowTime.active) {
+                    slowElement.style.display = 'flex';
+                    slowTimer.textContent = Math.ceil(this.activePowerups.slowTime.timeLeft / 1000) + 's';
+                } else {
+                    slowElement.style.display = 'none';
+                }
+            }
+            
+            loadLeaderboard() {
+                try {
+                    const scores = localStorage.getItem('mexicanLoveGameScores');
+                    return scores ? JSON.parse(scores) : [];
+                } catch (e) {
+                    console.error('Error cargando puntuaciones:', e);
+                    return [];
+                }
+            }
+            
+            saveLeaderboard(scores) {
+                try {
+                    localStorage.setItem('mexicanLoveGameScores', JSON.stringify(scores));
+                } catch (e) {
+                    console.error('Error guardando puntuaciones:', e);
+                }
+            }
+            
+            showLeaderboard() {
+                const scores = this.loadLeaderboard();
+                const leaderboardElement = document.getElementById('leaderboard');
+                const listElement = document.getElementById('leaderboardList');
+                
+                listElement.innerHTML = '';
+                
+                if (scores.length === 0) {
+                    listElement.innerHTML = '<li style="text-align: center; color: #ff99cc; font-style: italic;">No hay puntuaciones aún</li>';
+                } else {
+                    scores.forEach((score, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'leaderboard-item';
+                        li.innerHTML = `
+                            <span class="leaderboard-rank">#${index + 1}</span>
+                            <span class="leaderboard-name">${score.name}</span>
+                            <span class="leaderboard-score">${score.score}</span>
+                        `;
+                        listElement.appendChild(li);
+                    });
+                }
+                
+                leaderboardElement.classList.remove('hidden');
+            }
+            
+            hideLeaderboard() {
+                document.getElementById('leaderboard').classList.add('hidden');
+            }
+            
+            saveScore() {
+                const nameInput = document.getElementById('nameInput');
+                const name = nameInput.value.trim() || 'Anónimo';
+                
+                const scores = this.loadLeaderboard();
+                scores.push({
+                    name: name,
+                    score: this.score,
+                    date: new Date().toLocaleDateString()
+                });
+                
+                // Ordenar por puntuación y tomar top 10
+                scores.sort((a, b) => b.score - a.score);
+                const topScores = scores.slice(0, 10);
+                
+                this.saveLeaderboard(topScores);
+                
+                // Ocultar inputs y mostrar mensaje
+                nameInput.style.display = 'none';
+                document.getElementById('saveScoreBtn').style.display = 'none';
+                
+                this.showFloatingText(window.innerWidth / 2, window.innerHeight / 2, '¡Puntuación guardada!');
+            }
+            
+            updateCombo() {
+                const comboElement = document.getElementById('combo');
+                if (this.combo > 1) {
+                    comboElement.classList.remove('hidden');
+                    document.getElementById('comboCount').textContent = this.combo;
+                } else {
+                    comboElement.classList.add('hidden');
+                }
+            }
+            
+            updateUI() {
+                document.getElementById('love').textContent = Math.min(this.love, 100);
+                document.getElementById('score').textContent = this.score;
+                
+                // Actualizar barra de amor
+                const percentage = Math.min((this.love / 100) * 100, 100);
+                document.getElementById('loveFill').style.width = percentage + '%';
+                
+                // Verificar victoria
+                if (this.love >= 100) {
+                    this.endGame(true);
+                }
+            }
+            
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Dibujar corazones
+                this.hearts.forEach(heart => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = Math.min(1, heart.life / 30);
+                    this.ctx.font = heart.size + 'px serif';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.shadowBlur = heart.type === 'triple' ? 20 : 15;
+                    this.ctx.shadowColor = heart.type === 'triple' ? '#ff66b3' : '#ff1744';
+                    this.ctx.fillText('💖', heart.x, heart.y);
+                    this.ctx.restore();
+                });
+                
+                // Dibujar pizzas
+                this.pizzas.forEach(pizza => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = Math.min(1, pizza.life / 100);
+                    this.ctx.font = pizza.size + 'px serif';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.shadowColor = '#ffd700';
+                    this.ctx.fillText(pizza.emoji, pizza.x, pizza.y);
+                    this.ctx.restore();
+                });
+                
+                // Dibujar power-ups
+                this.powerups.forEach(powerup => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = Math.min(1, powerup.life / 100);
+                    const scale = 1 + Math.sin(powerup.pulse) * 0.1;
+                    this.ctx.font = (powerup.size * scale) + 'px serif';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.shadowBlur = 25;
+                    this.ctx.shadowColor = '#00ff00';
+                    this.ctx.fillText(powerup.emoji, powerup.x, powerup.y);
+                    this.ctx.restore();
+                });
+                
+                // Dibujar partículas
+                this.particles.forEach(particle => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = particle.life / 40;
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.shadowColor = particle.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                });
+            }
+            
+            gameLoop() {
+                if (this.state === 'playing') {
+                    this.spawnPizza();
+                    this.spawnPowerup();
+                    this.updateHearts();
+                    this.updatePizzas();
+                    this.updatePowerups();
+                    this.updateParticles();
+                    this.checkCollisions();
+                    this.updateUI();
+                    this.draw();
+                    
+                    this.animationId = requestAnimationFrame(() => this.gameLoop());
+                }
+            }
+            
+            spawnPowerup() {
+                const now = Date.now();
+                
+                // Power-up aparece cada 15-25 segundos
+                if (now - this.lastPowerupSpawn < 20000) return;
+                
+                // Probabilidad del 30% de aparecer
+                if (Math.random() > 0.3) return;
+                
+                const powerupTypes = [
+                    { type: 'tripleHeart', emoji: '💕', duration: 10000 },
+                    { type: 'slowTime', emoji: '⏰', duration: 5000 }
+                ];
+                
+                const selectedPowerup = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+                
+                const powerup = {
+                    x: this.canvas.width + 50,
+                    y: Math.random() * (this.canvas.height - 200) + 100,
+                    vx: -2,
+                    type: selectedPowerup.type,
+                    emoji: selectedPowerup.emoji,
+                    duration: selectedPowerup.duration,
+                    size: 35,
+                    life: 400,
+                    pulse: 0
+                };
+                
+                this.powerups.push(powerup);
+                this.lastPowerupSpawn = now;
+            }
+            
+            updatePowerups() {
+                // Actualizar power-ups en pantalla
+                for (let i = this.powerups.length - 1; i >= 0; i--) {
+                    const powerup = this.powerups[i];
+                    powerup.x += powerup.vx;
+                    powerup.life--;
+                    powerup.pulse += 0.1;
+                    
+                    // Si sale de pantalla o se acaba la vida
+                    if (powerup.x < -100 || powerup.life <= 0) {
+                        this.powerups.splice(i, 1);
+                    }
+                }
+                
+                // Actualizar duración de power-ups activos
+                Object.keys(this.activePowerups).forEach(key => {
+                    if (this.activePowerups[key].active) {
+                        this.activePowerups[key].timeLeft -= 16; // ~60 FPS
+                        if (this.activePowerups[key].timeLeft <= 0) {
+                            this.activePowerups[key].active = false;
+                            this.activePowerups[key].timeLeft = 0;
+                        }
+                    }
+                });
+                
+                this.updatePowerupsDisplay();
+            }
+            
+            endGame(victory = false) {
+                console.log('Juego terminado. Victoria:', victory);
+                
+                this.state = 'ended';
+                
+                if (this.gameTimer) {
+                    clearInterval(this.gameTimer);
+                }
+                
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+
+                this.stopBackgroundMusic();
+                
+                // Ocultar UI de juego
+                this.ui.classList.add('hidden');
+                this.instructions.classList.add('hidden');
+                
+                // Mostrar mensaje final
+                const endTitle = document.getElementById('endTitle');
+                const loveQuote = document.getElementById('loveQuote');
+                const endText = document.getElementById('endText');
+                
+                if (victory) {
+                    endTitle.textContent = '¡Felicidades, Mi Jero Hermoso!';
+                    loveQuote.textContent = this.messages[Math.floor(Math.random() * this.messages.length)];
+                    endText.innerHTML = `
+                        Has llenado mi corazón de amor 💖<br>
+                        Puntuación: ${this.score}<br>
+                        Combo máximo: x${this.combo}<br>
+                        ¡Eres increíble, mi amor!
+                    `;
+                    
+                    // Animación de celebración
+                    this.cow.classList.add('cow-celebrating');
+                } else {
+                    endTitle.textContent = '¡Tiempo Terminado!';
+                    loveQuote.textContent = 'Pero nuestro amor es eterno ⏰💕';
+                    endText.innerHTML = `
+                        El tiempo se agotó, pero mi amor por ti nunca 💖<br>
+                        Puntuación: ${this.score}<br>
+                        Amor conseguido: ${this.love}/100<br>
+                        ¡Inténtalo de nuevo, mi vida!
+                    `;
+                }
+                
+                // Mostrar input para guardar puntuación si es un buen score
+                const scores = this.loadLeaderboard();
+                const isTopScore = scores.length < 10 || this.score > scores[scores.length - 1].score;
+                
+                if (isTopScore) {
+                    document.getElementById('nameInput').style.display = 'block';
+                    document.getElementById('saveScoreBtn').style.display = 'inline-block';
+                }
+                
+                this.endMessage.classList.add('show');
+            }
+            
+            showMenu() {
+                console.log('Mostrando menú principal');
+                
+                this.state = 'menu';
+                
+                if (this.gameTimer) {
+                    clearInterval(this.gameTimer);
+                }
+                
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+                
+                // Detener música de fondo
+                this.stopBackgroundMusic();
+                
+                // Limpiar arrays
+                this.hearts = [];
+                this.pizzas = [];
+                this.particles = [];
+                this.powerups = [];
+                
+                // Limpiar canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Resetear animación de vaca
+                this.cow.classList.remove('cow-celebrating', 'cow-shooting');
+                
+                // Mostrar/ocultar elementos
+                this.ui.classList.add('hidden');
+                this.instructions.classList.add('hidden');
+                this.endMessage.classList.remove('show');
+                this.mainMenu.classList.remove('hidden');
+                
+                // Limpiar textos flotantes
+                document.querySelectorAll('.floating-text').forEach(el => {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                    }
+                });
+            }
+            
+            pauseGame() {
+                if (this.state === 'playing') {
+                    this.state = 'paused';
+                    this.stopBackgroundMusic();
+                }
+            }
+            
+            toggleSound() {
+                this.soundEnabled = !this.soundEnabled;
+                this.soundBtn.textContent = this.soundEnabled ? '🔊' : '🔇';
+                
+                if (!this.soundEnabled) {
+                    this.stopBackgroundMusic();
+                } else if (this.state === 'playing') {
+                    this.playBackgroundMusic();
+                }
+                
+                console.log('Sonido:', this.soundEnabled ? 'activado' : 'desactivado');
+            }
+        }
+
+        // Inicializar el juego cuando cargue la página
+        let game;
+        window.addEventListener('load', () => {
+            game = new MexicanLoveGame();
+            console.log('🎮 Juego cargado con tu canción personalizada incluida');
+        });
+
+        // Prevenir comportamientos no deseados en móviles
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
